@@ -1,4 +1,28 @@
-`chmod -x run.sh init_folder.sh`
+```
+chmod -x run.sh init_folder.sh
+sudo bash ./run.sh
+```
+
+
+ ## manual backup
+
+```shell
+portwarden --passphrase 1234 --filename backup.portwarden encrypt
+portwarden --passphrase 1234 --filename backup.portwarden decrypt
+```
+
+ ## manual ecryption
+
+ ```shell
+  tar czf - backup.portwarden.decrypted/ | openssl enc -aes-256-cbc -salt -pbkdf2 -k "mypass" -out encrypted.enc
+ ```
+
+ ## manual decryptyon
+ ```shell
+ openssl enc -d -aes-256-cbc -pbkdf2 -k "mypass" -in encrypted.enc | tar xzf -
+ ```
+
+## extra info
 
 core dependencies:
  - linux
@@ -35,22 +59,4 @@ func DeriveKey(passphrase string) []byte {
 	}
 	return plaintext, nil
 }
- ```
-
- ## manual backup
-
-```shell
-portwarden --passphrase 1234 --filename backup.portwarden encrypt
-portwarden --passphrase 1234 --filename backup.portwarden decrypt
-```
-
- ## manual ecryption
-
- ```shell
-  tar czf - backup.portwarden.decrypted/ | openssl enc -aes-256-cbc -salt -pbkdf2 -k "mypass" -out encrypted.enc
- ```
-
- ## manual decryptyon
- ```shell
- openssl enc -d -aes-256-cbc -pbkdf2 -k "mypass" -in encrypted.enc | tar xzf -
  ```
