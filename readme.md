@@ -1,31 +1,56 @@
-## Как использовать?
-1. Просто запустить vaultwarden (без GitHub)
-```bash
-chmod +x setup_vaultwarden.sh
-./setup_vaultwarden.sh
+`chmod -x run.sh init_folder.sh`
+
+core dependencies:
+ - linux
+ - docker
+ - portwarden
+
+ Decryption:
+ - https://github.com/vwxyzjn/portwarden/blob/v1.0.0/encryption.go#L22
+ - https://github.com/vwxyzjn/portwarden/blob/v1.0.0/encryption.go#L40
+
+ ```go
+func DeriveKey(passphrase string) []byte {
+	return pbkdf2.Key([]byte(passphrase), []byte(Salt), 4096, 32, sha256.New)
+}
+
+ func DecryptBytes(data []byte, passphrase string) ([]byte, error) {
+	key := DeriveKey(passphrase)
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return []byte{}, err
+	}
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return []byte{}, err
+	}
+	nonceSize := gcm.NonceSize()
+	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
+	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		if err.Error() == ErrMessageAuthenticationFailed {
+			return []byte{}, errors.New(ErrWrongBackupPassphrase)
+		}
+		return []byte{}, err
+	}
+	return plaintext, nil
+}
+ ```
+
+ ## manual backup
+
+```shell
+portwarden --passphrase 1234 --filename backup.portwarden encrypt
+portwarden --passphrase 1234 --filename backup.portwarden decrypt
 ```
-2. Запустить и импортировать базу из приватного GitHub-репозитория
-```bash
-./setup_vaultwarden.sh "git@github.com:ваш_логин/ваш_репозиторий.git"
-```
-(Или HTTPS-ссылка, если не настроен SSH.)
 
-## Что делает скрипт?
-1. Создаёт папку ~/vaultwardenapp.
+ ## manual ecryption
 
-2. Если передан GitHub-репозиторий:
+ ```shell
+  tar czf - backup.portwarden.decrypted/ | openssl enc -aes-256-cbc -salt -pbkdf2 -k "mypass" -out encrypted.enc
+ ```
 
-    - Клонирует его во временную папку.
-
-    - Ищет файл .sqlite (например, db.sqlite3).
-
-    - Копирует его в ~/vaultwardenapp/data.sqlite (куда монтируется /data/ в контейнере).
-
-3. Запускает контейнер vaultwarden.
-
-# Важные нюансы
-🔸 Для приватных репозиториев нужен доступ по SSH (настройте git clone с ключом).
-
-🔸 Имя SQLite-файла должно содержать .sqlite (иначе измените строку поиска в скрипте).
-
-🔸 Если база не импортируется — vaultwarden создаст новую автоматически.
+ ## manual decryptyon
+ ```shell
+ openssl enc -d -aes-256-cbc -pbkdf2 -k "mypass" -in encrypted.enc | tar xzf -
+ ```
