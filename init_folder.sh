@@ -7,13 +7,21 @@ YELLOW='\e[33m'
 BLUE='\e[34m'
 RESET='\e[0m'
 
+if ! docker info >/dev/null 2>&1; then
+    echo "Docker is not running or you don't have permissions"
+    echo "Trying to start Docker..."
+    sudo systemctl start docker
+fi
+
 FOLDER_NAME="vaultwardenapp"
-GITHUB_REPO="$1"
-ADMIN_TOKEN=$2
+ADMIN_TOKEN=$1
+GITHUB_REPO=$2
 VAULTWARDEN_PORT="80"
 
+CURRENT=${pwd}
+
 echo
-if [ -n "$ADMIN_TOKEN"]; then
+if [ -z "$ADMIN_TOKEN" ]; then
     echo "${YELLOW}empty ADMIN TOKEN RECEIVED .ADMIN_TOKEN=admin_token_3141${RESET}"
     ADMIN_TOKEN="admin_token_3141"
 fi
@@ -55,3 +63,4 @@ docker run --detach --name vaultwarden1 \
 echo "${RESET}"
 echo "${GREEN}READY! Vaultwarden is running on port $VAULTWARDEN_PORT${RESET}"
 echo
+cd $CURRENT

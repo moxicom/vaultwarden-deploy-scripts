@@ -1,10 +1,21 @@
-```
-chmod -x run.sh init_folder.sh
-sudo bash ./run.sh
-```
+```shell
+sudo sh ./run.sh
+
+#
+# sh run.sh http://localhost:80 123
+#
+``` 
+
+VOLUME creates at `/vaultwardenapp`
+
+## TODO
+- [X] Bitwarden cli install
+- [X] Portwarden linux amd64 install
+- [X] Docker container
+- [ ] Auto backup using github
 
 
- ## manual backup
+## manual backup
 
 ```shell
 portwarden --passphrase 1234 --filename backup.portwarden encrypt
