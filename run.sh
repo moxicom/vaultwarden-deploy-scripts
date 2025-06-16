@@ -16,6 +16,6 @@ echo -e "INITIALING APP..."
 
 sh ./installdeps.sh || exit 1
 
-sh ./bitwarden_update.sh $SERVER_URL || exit 1
-
 sh ./init_folder.sh $VAULTWARDEN_ADMIN_TOKEN || exit 1
+
+sh ./bitwarden_update.sh $SERVER_URL || exit 1
