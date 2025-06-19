@@ -1,10 +1,13 @@
 ## Vaultwarden deploy & autobackup scripts
 
 ```shell
-sudo sh ./run.sh
+# for run
+sh ./run.sh
 
+# to save backup
+sh ./backup.sh
 #
-# sh run.sh http://localhost:80 123
+# sh run.sh 8081 123
 #
 ``` 
 

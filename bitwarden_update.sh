@@ -1,14 +1,8 @@
 #!/bin/bash
 
-SERVER=$1
+VAULTWARDEN_PORT=$1
 
-if [ -z "$SERVER" ]; then
-    echo "${YELLOW}Server url is empty. Changed to http://localhost:80${RESET}"
-    SERVER="http://localhost:80"
-fi
-
-echo
 echo 'Logging out'
 bw logout
-echo "Changing server url to "$SERVER""
-bw config server $SERVER
+echo "Changing server url to "http://localhost:$VAULTWARDEN_PORT""
+bw config server http://localhost:$VAULTWARDEN_PORT
